@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
@@ -17,10 +18,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TaskItemClicked {
 
     val list = arrayListOf<TodoModel>()
-    var adapter = TodoAdapter(list)
+    var adapter = TodoAdapter(this, list)
 
     val db by lazy {
         AppDatabase.getDatabase(this)
@@ -47,7 +48,6 @@ class MainActivity : AppCompatActivity() {
                 adapter.notifyDataSetChanged()
             }
         })
-
 
     }
 
@@ -109,7 +109,6 @@ class MainActivity : AppCompatActivity() {
                             paint
                         )
 
-
                     } else {
                         icon = BitmapFactory.decodeResource(resources, R.mipmap.ic_delete_white_png)
 
@@ -126,10 +125,8 @@ class MainActivity : AppCompatActivity() {
                             itemView.top.toFloat() + (itemView.bottom.toFloat() - itemView.top.toFloat() - icon.height.toFloat()) / 2,
                             paint
                         )
-
                     }
                     viewHolder.itemView.translationX = dX
-
                 } else {
                     super.onChildDraw(
                         canvas,
@@ -206,5 +203,9 @@ class MainActivity : AppCompatActivity() {
 
     fun openNewTask(view: View) {
         startActivity(Intent(this, TaskActivity::class.java))
+    }
+
+    override fun onItemClicked(item: TodoModel) {
+        item.isFinished = 1
     }
 }

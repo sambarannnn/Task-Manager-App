@@ -1,23 +1,25 @@
 package com.example.todoapp
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.activity_task.*
 import kotlinx.android.synthetic.main.item_todo.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TodoAdapter(val list: List<TodoModel>) : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
+class TodoAdapter(private val listener:TaskItemClicked, private val list: List<TodoModel>) : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
-        return TodoViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_todo, parent, false)
-        )
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_todo, parent, false)
+
+        val viewHolder = TodoViewHolder(view)
+        view.setOnClickListener {
+            listener.onItemClicked(list[viewHolder.adapterPosition])
+        }
+
+        return viewHolder
     }
 
     override fun getItemCount() = list.size
@@ -36,7 +38,8 @@ class TodoAdapter(val list: List<TodoModel>) : RecyclerView.Adapter<TodoAdapter.
             with(itemView) {
                 val colors = resources.getIntArray(R.array.random_color)
                 val randomColor = colors[Random().nextInt(colors.size)]
-                viewColorTag.setBackgroundColor(resources.getColor(R.color.colorPrimary))
+                if(todoModel.isFinished != 1)
+                    viewColorTag.setBackgroundColor(resources.getColor(R.color.colorPrimary))
                 txtShowTitle.text = todoModel.title
                 txtShowTask.text = todoModel.description
                 txtShowCategory.text = todoModel.category
@@ -60,7 +63,9 @@ class TodoAdapter(val list: List<TodoModel>) : RecyclerView.Adapter<TodoAdapter.
 
         }
     }
-
+}
+interface TaskItemClicked {
+    fun onItemClicked(item: TodoModel)
 }
 
 
